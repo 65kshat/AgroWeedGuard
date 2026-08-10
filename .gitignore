@@ -28,6 +28,8 @@ env/
 datasets/
 documents/
 models/CNN/
+models/YOLO/
+notebooks/runs/
 
 *.tmp
 *.log
