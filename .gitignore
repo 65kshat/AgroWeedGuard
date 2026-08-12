@@ -29,6 +29,7 @@ datasets/
 documents/
 models/CNN/
 models/YOLO/
+models/FasterRCNN/
 notebooks/runs/
 
 *.tmp
