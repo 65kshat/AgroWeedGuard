@@ -28,10 +28,7 @@ env/
 datasets/
 documents/
 
-models/CNN/
-models/YOLO/
-models/FasterRCNN/
-models/ViT/
+
 
 notebooks/runs/
 
