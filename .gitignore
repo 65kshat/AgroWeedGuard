@@ -29,7 +29,9 @@ datasets/
 documents/
 
 models/CNN/
-models/YOLO/
+models/YOLO/dataset_check
+models/YOLO/yolov8n_weed_detector/extra
+models/YOLO/extra
 models/FasterRCNN/
 models/ViT/
 
