@@ -6,14 +6,33 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+
 import streamlit as st
-import tempfile
 import time
 
 from PIL import Image
 
-from utils.yolo_utils import predict_yolo
-from utils.fasterrcnn_utils import predict_fasterrcnn
+from utils.yolo_utils import (
+    draw_yolo_boxes,
+    get_yolo_predictions
+)
+
+from utils.fasterrcnn_utils import (
+    draw_fasterrcnn_boxes,
+    get_fasterrcnn_predictions
+)
+
+
+# --------------------------------------------------
+# PAGE CONFIG
+# --------------------------------------------------
+
+st.set_page_config(
+    page_title="Detection | AgroWeedGuard",
+    page_icon="🔍",
+    layout="wide"
+)
+
 
 # --------------------------------------------------
 # PAGE TITLE
@@ -22,10 +41,12 @@ from utils.fasterrcnn_utils import predict_fasterrcnn
 st.title("🔍 Weed Detection")
 
 st.markdown(
-    "Detect weeds using YOLOv8 or Faster R-CNN."
+    "Detect and localize weeds using YOLOv8 "
+    "or Faster R-CNN."
 )
 
 st.divider()
+
 
 # --------------------------------------------------
 # MODEL SELECTION
@@ -40,6 +61,20 @@ model_choice = st.radio(
     horizontal=True
 )
 
+
+# --------------------------------------------------
+# CONFIDENCE THRESHOLD
+# --------------------------------------------------
+
+confidence_threshold = st.slider(
+    "Confidence Threshold",
+    min_value=0.10,
+    max_value=0.95,
+    value=0.50,
+    step=0.05
+)
+
+
 # --------------------------------------------------
 # IMAGE UPLOAD
 # --------------------------------------------------
@@ -49,87 +84,170 @@ uploaded_file = st.file_uploader(
     type=["jpg", "jpeg", "png"]
 )
 
+
 # --------------------------------------------------
-# PROCESS IMAGE
+# DETECTION
 # --------------------------------------------------
 
 if uploaded_file is not None:
 
-    image = Image.open(uploaded_file).convert("RGB")
+    image = Image.open(
+        uploaded_file
+    ).convert("RGB")
 
-    col1, col2 = st.columns(2)
+    st.subheader("Uploaded Image")
 
-    with col1:
-        st.subheader("Original Image")
-        st.image(
-            image,
-            use_container_width=True
-        )
+    st.image(
+        image,
+        use_container_width=True
+    )
 
-    if st.button("Run Detection"):
+    st.divider()
 
-        with tempfile.NamedTemporaryFile(
-            delete=False,
-            suffix=".jpg"
-        ) as temp_file:
+    if st.button(
+        "🔍 Run Detection",
+        use_container_width=True
+    ):
 
-            image.save(temp_file.name)
+        start_time = time.perf_counter()
 
-            start_time = time.time()
+        try:
 
-            try:
+            # ======================================
+            # YOLO
+            # ======================================
 
-                if model_choice == "YOLOv8":
+            if model_choice == "YOLOv8":
 
-                    result = predict_yolo(
-                        temp_file.name
-                    )
+                # YOLO uses its own confidence
+                # threshold internally.
+                #
+                # Current utility does not expose
+                # threshold as an argument, so the
+                # slider is not applied here yet.
 
-                else:
-
-                    result = predict_fasterrcnn(
-                        temp_file.name
-                    )
-
-                inference_time = (
-                    time.time() - start_time
+                annotated_image = draw_yolo_boxes(
+                    image
                 )
 
-                with col2:
-
-                    st.subheader("Detection Result")
-
-                    st.image(
-                        result["image"],
-                        use_container_width=True
-                    )
-
-                st.divider()
-
-                st.subheader("Detection Statistics")
-
-                col_a, col_b, col_c = st.columns(3)
-
-                with col_a:
-                    st.metric(
-                        "Detections",
-                        result["count"]
-                    )
-
-                with col_b:
-                    st.metric(
-                        "Model",
-                        model_choice
-                    )
-
-                with col_c:
-                    st.metric(
-                        "Time (sec)",
-                        f"{inference_time:.2f}"
-                    )
-
-            except Exception as e:
-
-                st.error(
-                    f"Detection Failed:\n{e}"
+                detections = get_yolo_predictions(
+                    image
                 )
+
+            # ======================================
+            # FASTER R-CNN
+            # ======================================
+
+            else:
+
+                annotated_image = (
+                    draw_fasterrcnn_boxes(
+                        image,
+                        confidence_threshold
+                    )
+                )
+
+                detections = (
+                    get_fasterrcnn_predictions(
+                        image,
+                        confidence_threshold
+                    )
+                )
+
+            inference_time = (
+                time.perf_counter()
+                - start_time
+            )
+
+            # ======================================
+            # RESULT IMAGE
+            # ======================================
+
+            st.header("🎯 Detection Result")
+
+            st.image(
+                annotated_image,
+                use_container_width=True
+            )
+
+            # ======================================
+            # STATISTICS
+            # ======================================
+
+            st.divider()
+
+            st.subheader(
+                "📊 Detection Statistics"
+            )
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+
+                st.metric(
+                    "Detections",
+                    len(detections)
+                )
+
+            with col2:
+
+                st.metric(
+                    "Model",
+                    model_choice
+                )
+
+            with col3:
+
+                st.metric(
+                    "Inference Time",
+                    f"{inference_time * 1000:.2f} ms"
+                )
+
+            # ======================================
+            # DETECTION DETAILS
+            # ======================================
+
+            st.subheader(
+                "🌿 Detected Weeds"
+            )
+
+            if len(detections) == 0:
+
+                st.warning(
+                    "No weeds detected above "
+                    "the confidence threshold."
+                )
+
+            else:
+
+                for i, detection in enumerate(
+                    detections,
+                    start=1
+                ):
+
+                    class_name = detection[
+                        "class_name"
+                    ]
+
+                    confidence = detection[
+                        "confidence"
+                    ]
+
+                    st.write(
+                        f"**Detection {i}:** "
+                        f"{class_name}"
+                    )
+
+                    st.progress(
+                        confidence,
+                        text=(
+                            f"Confidence: "
+                            f"{confidence * 100:.2f}%"
+                        )
+                    )
+
+        except Exception as e:
+
+            st.error(
+                f"Detection Failed: {e}"
+            )
