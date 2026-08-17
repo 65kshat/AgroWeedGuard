@@ -5,10 +5,8 @@ import numpy as np
 
 from PIL import Image
 
-from utils.model_loader import (
-    load_yolo,
-    CLASS_NAMES
-)
+from utils.model_loader import load_yolo
+from utils.image_utils import get_class_name
 
 # --------------------------------------------------
 # Predict
@@ -54,7 +52,7 @@ def draw_yolo_boxes(image):
             class_id = int(box.cls[0])
 
             label = (
-                f"{CLASS_NAMES[class_id]} "
+                f"{get_class_name(class_id)} "
                 f"{confidence:.2f}"
             )
 
@@ -102,7 +100,7 @@ def get_yolo_predictions(image):
             detections.append(
                 {
                     "class_id": class_id,
-                    "class_name": CLASS_NAMES[class_id],
+                    "class_name": get_class_name(class_id),
                     "confidence": round(
                         confidence,
                         4

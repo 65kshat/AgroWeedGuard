@@ -9,9 +9,10 @@ from torchvision import transforms
 
 from utils.model_loader import (
     load_fasterrcnn,
-    CLASS_NAMES,
     DEVICE
 )
+
+from utils.image_utils import get_class_name
 
 # --------------------------------------------------
 # Image Transform
@@ -101,7 +102,7 @@ def draw_fasterrcnn_boxes(
 
         cv2.putText(
             image_np,
-            f"{CLASS_NAMES[class_id]} {confidence:.2f}",
+            f"{get_class_name(class_id)} {confidence:.2f}",
             (int(x1), int(y1)-10),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
@@ -137,7 +138,7 @@ def get_fasterrcnn_predictions(
 
         detections.append({
             "class_id": class_id,
-            "class_name": CLASS_NAMES[class_id],
+            "class_name": get_class_name(class_id),
             "confidence": round(
                 float(score.item()),
                 4
