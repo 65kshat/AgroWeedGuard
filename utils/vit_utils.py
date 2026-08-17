@@ -4,10 +4,9 @@ import torch
 import torch.nn.functional as F
 
 from torchvision import transforms
-
+from utils.image_utils import get_class_name
 from utils.model_loader import (
     load_vit,
-    CLASS_NAMES,
     DEVICE
 )
 
@@ -55,7 +54,7 @@ def predict_vit(image):
 
     return {
         "class_id": class_id,
-        "class_name": CLASS_NAMES[class_id],
+        "class_name": get_class_name(class_id),
         "confidence": round(
             confidence.item(),
             4
@@ -98,13 +97,11 @@ def predict_vit_topk(
         confidences[0],
         indices[0]
     ):
-
+        class_id = index.item()
         results.append(
             {
                 "class_id": index.item(),
-                "class_name": CLASS_NAMES[
-                    index.item()
-                ],
+                "class_name": get_class_name(class_id),
                 "confidence": round(
                     confidence.item(),
                     4
