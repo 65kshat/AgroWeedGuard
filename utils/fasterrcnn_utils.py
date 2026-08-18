@@ -146,3 +146,101 @@ def get_fasterrcnn_predictions(
         })
 
     return detections
+
+# --------------------------------------------------
+# Combined Prediction
+# --------------------------------------------------
+
+def run_fasterrcnn(
+    image,
+    confidence_threshold=0.5
+):
+
+    prediction = predict_fasterrcnn(
+        image,
+        confidence_threshold
+    )
+
+    image_np = np.array(image).copy()
+
+    original_h, original_w = image_np.shape[:2]
+
+    scale_x = original_w / 640
+    scale_y = original_h / 640
+
+    detections = []
+
+    for box, label, score in zip(
+        prediction["boxes"],
+        prediction["labels"],
+        prediction["scores"]
+    ):
+
+        x1, y1, x2, y2 = (
+            box.cpu().numpy()
+        )
+
+        # ------------------------------------------
+        # Rescale bounding box to original image
+        # ------------------------------------------
+
+        x1 *= scale_x
+        x2 *= scale_x
+
+        y1 *= scale_y
+        y2 *= scale_y
+
+        class_id = int(
+            label.item()
+        ) - 1
+
+        confidence = float(
+            score.item()
+        )
+
+        class_name = get_class_name(
+            class_id
+        )
+
+        # ------------------------------------------
+        # Detection Information
+        # ------------------------------------------
+
+        detections.append({
+            "class_id": class_id,
+            "class_name": class_name,
+            "confidence": round(
+                confidence,
+                4
+            )
+        })
+
+        # ------------------------------------------
+        # Bounding Box
+        # ------------------------------------------
+
+        cv2.rectangle(
+            image_np,
+            (int(x1), int(y1)),
+            (int(x2), int(y2)),
+            (255, 0, 255),
+            2
+        )
+
+        cv2.putText(
+            image_np,
+            f"{class_name} {confidence:.2f}",
+            (
+                int(x1),
+                max(int(y1) - 10, 20)
+            ),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255, 0, 255),
+            2
+        )
+
+    return {
+        "detections": detections,
+        "image": image_np
+    }

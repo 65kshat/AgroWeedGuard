@@ -12,15 +12,11 @@ import time
 
 from PIL import Image
 
-from utils.yolo_utils import (
-    get_yolo_predictions,
-    draw_yolo_boxes
-)
+from utils.yolo_utils import run_yolo
+from utils.fasterrcnn_utils import run_fasterrcnn
 
-from utils.fasterrcnn_utils import (
-    get_fasterrcnn_predictions,
-    draw_fasterrcnn_boxes
-)
+from utils.cnn_utils import predict_cnn
+from utils.vit_utils import predict_vit
 
 from utils.cnn_utils import predict_cnn
 from utils.vit_utils import predict_vit
@@ -78,17 +74,13 @@ if uploaded_file is not None:
 
         try:
 
-            # ======================================
+            # --------------------------------------
             # YOLO
-            # ======================================
+            # --------------------------------------
 
             start = time.perf_counter()
 
-            yolo_detections = get_yolo_predictions(
-                image
-            )
-
-            yolo_image = draw_yolo_boxes(
+            yolo_result = run_yolo(
                 image
             )
 
@@ -96,28 +88,25 @@ if uploaded_file is not None:
                 time.perf_counter() - start
             )
 
+            yolo_detections = yolo_result["detections"]
+            yolo_image = yolo_result["image"]
 
-            # ======================================
-            # FASTER R-CNN
-            # ======================================
+            # --------------------------------------
+            # Faster R-CNN
+            # --------------------------------------
 
             start = time.perf_counter()
 
-            frcnn_detections = (
-                get_fasterrcnn_predictions(
-                    image
-                )
-            )
-
-            frcnn_image = (
-                draw_fasterrcnn_boxes(
-                    image
-                )
+            frcnn_result = run_fasterrcnn(
+                image
             )
 
             frcnn_time = (
                 time.perf_counter() - start
             )
+
+            frcnn_detections = frcnn_result["detections"]
+            frcnn_image = frcnn_result["image"]
 
 
             # ======================================

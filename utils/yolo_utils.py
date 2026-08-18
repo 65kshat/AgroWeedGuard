@@ -109,3 +109,85 @@ def get_yolo_predictions(image):
             )
 
     return detections
+
+# --------------------------------------------------
+# Combined Prediction
+# --------------------------------------------------
+
+def run_yolo(image):
+
+    results = predict_yolo(image)
+
+    image_np = np.array(image).copy()
+
+    detections = []
+
+    for result in results:
+
+        boxes = result.boxes
+
+        for box in boxes:
+
+            x1, y1, x2, y2 = (
+                box.xyxy[0]
+                .cpu()
+                .numpy()
+                .astype(int)
+            )
+
+            confidence = float(
+                box.conf[0]
+            )
+
+            class_id = int(
+                box.cls[0]
+            )
+
+            class_name = get_class_name(
+                class_id
+            )
+
+            # ------------------------------
+            # Detection Information
+            # ------------------------------
+
+            detections.append({
+                "class_id": class_id,
+                "class_name": class_name,
+                "confidence": round(
+                    confidence,
+                    4
+                )
+            })
+
+            # ------------------------------
+            # Bounding Box
+            # ------------------------------
+
+            label = (
+                f"{class_name} "
+                f"{confidence:.2f}"
+            )
+
+            cv2.rectangle(
+                image_np,
+                (x1, y1),
+                (x2, y2),
+                (0, 255, 0),
+                2
+            )
+
+            cv2.putText(
+                image_np,
+                label,
+                (x1, max(y1 - 10, 20)),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (0, 255, 0),
+                2
+            )
+
+    return {
+        "detections": detections,
+        "image": image_np
+    }
