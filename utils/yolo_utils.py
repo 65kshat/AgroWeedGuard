@@ -12,12 +12,16 @@ from utils.image_utils import get_class_name
 # Predict
 # --------------------------------------------------
 
-def predict_yolo(image):
+def predict_yolo(
+    image,
+    confidence_threshold=0.5
+):
 
     model = load_yolo()
 
     results = model(
         image,
+        conf=confidence_threshold,
         verbose=False
     )
 
@@ -28,9 +32,15 @@ def predict_yolo(image):
 # Draw Bounding Boxes
 # --------------------------------------------------
 
-def draw_yolo_boxes(image):
+def draw_yolo_boxes(
+    image,
+    confidence_threshold=0.5
+):
 
-    results = predict_yolo(image)
+    results = predict_yolo(
+        image,
+        confidence_threshold
+    )
 
     image_np = np.array(image)
 
@@ -76,14 +86,19 @@ def draw_yolo_boxes(image):
 
     return image_np
 
-
 # --------------------------------------------------
 # Detection Summary
 # --------------------------------------------------
 
-def get_yolo_predictions(image):
+def get_yolo_predictions(
+    image,
+    confidence_threshold=0.5
+):
 
-    results = predict_yolo(image)
+    results = predict_yolo(
+        image,
+        confidence_threshold
+    )
 
     detections = []
 
@@ -109,7 +124,6 @@ def get_yolo_predictions(image):
             )
 
     return detections
-
 # --------------------------------------------------
 # Combined Prediction
 # --------------------------------------------------

@@ -58,9 +58,10 @@ model_choice = st.radio(
 # IMAGE UPLOAD
 # --------------------------------------------------
 
-uploaded_file = st.file_uploader(
-    "Upload Weed Image",
-    type=["jpg", "jpeg", "png"]
+uploaded_files = st.file_uploader(
+    "Upload Weed Image(s)",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=True
 )
 
 
@@ -68,122 +69,114 @@ uploaded_file = st.file_uploader(
 # CLASSIFICATION
 # --------------------------------------------------
 
-if uploaded_file is not None:
+if uploaded_files:
 
-    image = Image.open(
-        uploaded_file
-    ).convert("RGB")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        st.subheader("Uploaded Image")
-
-        st.image(
-            image,
-            use_container_width=True
-        )
-
-    with col2:
-
-        st.subheader("Selected Model")
-
-        st.info(model_choice)
-
-    st.divider()
+    st.subheader(
+        f"📷 {len(uploaded_files)} Image(s) Selected"
+    )
 
     if st.button(
         "🔍 Run Classification",
         use_container_width=True
     ):
 
-        start_time = time.perf_counter()
+        st.divider()
 
-        try:
+        st.header("🎯 Classification Results")
 
-            # --------------------------------------
-            # CNN
-            # --------------------------------------
+        # ------------------------------------------
+        # PROCESS EACH IMAGE
+        # ------------------------------------------
 
-            if model_choice == "CNN (ResNet18)":
+        for image_number, uploaded_file in enumerate(
+            uploaded_files,
+            start=1
+        ):
 
-                result = predict_cnn(
-                    image
-                )
-
-            # --------------------------------------
-            # ViT
-            # --------------------------------------
-
-            else:
-
-                result = predict_vit(
-                    image
-                )
-
-            inference_time = (
-                time.perf_counter()
-                - start_time
-            )
-
-            # --------------------------------------
-            # RESULT
-            # --------------------------------------
-
-            st.divider()
-
-            st.header("🎯 Classification Result")
-
-            result_col1, result_col2 = st.columns(2)
-
-            with result_col1:
-
-                st.success(
-                    f"Prediction: "
-                    f"{result['class_name']}"
-                )
-
-            with result_col2:
-
-                st.metric(
-                    "Confidence",
-                    f"{result['confidence'] * 100:.2f}%"
-                )
-
-            # --------------------------------------
-            # STATISTICS
-            # --------------------------------------
+            image = Image.open(
+                uploaded_file
+            ).convert("RGB")
 
             st.subheader(
-                "📊 Classification Statistics"
+                f"Image {image_number}: "
+                f"{uploaded_file.name}"
             )
 
-            c1, c2, c3 = st.columns(3)
+            col1, col2 = st.columns(2)
 
-            with c1:
+            # --------------------------------------
+            # IMAGE
+            # --------------------------------------
 
-                st.metric(
-                    "Class ID",
-                    result["class_id"]
+            with col1:
+
+                st.image(
+                    image,
+                    caption=uploaded_file.name,
+                    use_container_width=True
                 )
 
-            with c2:
+            # --------------------------------------
+            # MODEL INFERENCE
+            # --------------------------------------
 
-                st.metric(
-                    "Model",
-                    model_choice
-                )
+            with col2:
 
-            with c3:
+                start_time = time.perf_counter()
 
-                st.metric(
-                    "Inference Time",
-                    f"{inference_time * 1000:.2f} ms"
-                )
+                try:
 
-        except Exception as e:
+                    if model_choice == "CNN (ResNet18)":
 
-            st.error(
-                f"Classification Failed: {e}"
-            )
+                        result = predict_cnn(
+                            image
+                        )
+
+                    else:
+
+                        result = predict_vit(
+                            image
+                        )
+
+                    inference_time = (
+                        time.perf_counter()
+                        - start_time
+                    )
+
+                    # ----------------------------------
+                    # PRIMARY RESULT
+                    # ----------------------------------
+
+                    st.success(
+                        f"🌿 {result['class_name']}"
+                    )
+
+                    st.metric(
+                        "Confidence",
+                        f"{result['confidence'] * 100:.2f}%"
+                    )
+
+                    # ----------------------------------
+                    # TECHNICAL DETAILS
+                    # ----------------------------------
+
+                    st.caption(
+                        f"Class ID: {result['class_id']}"
+                    )
+
+                    st.caption(
+                        f"Model: {model_choice}"
+                    )
+
+                    st.caption(
+                        f"Inference Time: "
+                        f"{inference_time * 1000:.2f} ms"
+                    )
+
+                except Exception as e:
+
+                    st.error(
+                        f"Classification Failed: {e}"
+                    )
+
+            st.divider()

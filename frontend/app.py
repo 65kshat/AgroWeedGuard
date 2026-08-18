@@ -1,5 +1,14 @@
-import streamlit as st
 from pathlib import Path
+import streamlit as st
+
+
+# --------------------------------------------------
+# PATHS
+# --------------------------------------------------
+
+CURRENT_DIR = Path(__file__).parent
+CSS_PATH = CURRENT_DIR / "style.css"
+
 
 # --------------------------------------------------
 # PAGE CONFIG
@@ -12,111 +21,62 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --------------------------------------------------
-# PATHS
-# --------------------------------------------------
-
-CURRENT_DIR = Path(__file__).parent
-
-ASSETS_DIR = CURRENT_DIR / "assets"
-
-LOGO_PATH = ASSETS_DIR / "logo.png"
-
-CSS_PATH = CURRENT_DIR / "styles.css"
 
 # --------------------------------------------------
-# LOAD CSS
+# LOAD GLOBAL CSS
 # --------------------------------------------------
 
 if CSS_PATH.exists():
 
-    with open(CSS_PATH) as f:
+    with open(
+        CSS_PATH,
+        "r",
+        encoding="utf-8"
+    ) as f:
 
         st.markdown(
             f"<style>{f.read()}</style>",
             unsafe_allow_html=True
         )
 
-# --------------------------------------------------
-# SIDEBAR
-# --------------------------------------------------
-
-with st.sidebar:
-
-    if LOGO_PATH.exists():
-
-        st.image(
-            str(LOGO_PATH),
-            use_container_width=True
-        )
-
-    st.title("🌱 AgroWeedGuard")
-
-    st.markdown("---")
-
-    st.markdown("""
-### Navigation
-
-Use the pages panel above to access:
-
-- 🏠 Home
-- 🔍 Detection
-- 🌿 Classification
-- 📊 Model Comparison
-- ℹ️ About Project
-""")
-
-    st.markdown("---")
-
-    st.markdown("""
-### Models
-
-✓ YOLOv8
-
-✓ Faster R-CNN
-
-✓ CNN (ResNet18)
-
-✓ Vision Transformer
-""")
 
 # --------------------------------------------------
-# MAIN PAGE
+# NAVIGATION
 # --------------------------------------------------
 
-st.title("🌱 AgroWeedGuard")
+pages = [
 
-st.subheader(
-    "AI-Powered Weed Detection and Classification System"
-)
+    st.Page(
+        "pages/home.py",
+        title="Home",
+        icon="🏠"
+    ),
 
-st.markdown("---")
+    st.Page(
+        "pages/detection.py",
+        title="Detection",
+        icon="🔍"
+    ),
 
-st.markdown("""
-Welcome to AgroWeedGuard.
+    st.Page(
+        "pages/classification.py",
+        title="Classification",
+        icon="🌿"
+    ),
 
-Use the navigation menu on the left to explore
-the application's features.
+    st.Page(
+        "pages/model_comparison.py",
+        title="Model Comparison",
+        icon="📊"
+    )
 
-### Available Modules
+]
 
-🔍 Detection
-- YOLOv8
-- Faster R-CNN
 
-🌿 Classification
-- CNN (ResNet18)
-- Vision Transformer
+# --------------------------------------------------
+# RUN APPLICATION
+# --------------------------------------------------
 
-📊 Model Comparison
-- Compare all AI models on the same image
+navigation = st.navigation(pages)
 
-ℹ️ About Project
-- Project details
-- Dataset information
-- System architecture
-""")
-
-st.info(
-    "Select a page from the sidebar to begin."
-)
+navigation.run()
