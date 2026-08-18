@@ -1,16 +1,343 @@
-.main {
-    padding-top: 1rem;
+/* =========================================================
+   AGROWEEDGUARD
+   Dark AI / Computer Vision Theme
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   GLOBAL
+   --------------------------------------------------------- */
+
+.stApp {
+    background: transparent;
+    color: #e8edf2;
 }
+
+.main {
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
+}
+
+/* ---------------------------------------------------------
+   BACKGROUND IMAGE
+   --------------------------------------------------------- */
+
+[data-testid="stAppViewContainer"] {
+    background:
+        linear-gradient(
+            rgba(3, 12, 8, 0.62),
+            rgba(3, 12, 8, 0.72)
+        ),
+        var(--agro-background-image);
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* ---------------------------------------------------------
+   MAIN CONTENT
+   --------------------------------------------------------- */
+
+
+[data-testid="stMain"] {
+    background: transparent;
+}
+
+
+/* ---------------------------------------------------------
+   SIDEBAR
+   --------------------------------------------------------- */
+
+[data-testid="stSidebar"] {
+    background: rgba(10, 13, 17, 0.92);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-testid="stSidebar"] p {
+    color: #c5cbd2;
+}
+
+
+/* ---------------------------------------------------------
+   HEADINGS
+   --------------------------------------------------------- */
 
 h1 {
-    color: #2E8B57;
+    color: #f2f5f7;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-.stButton>button {
+h2 {
+    color: #e8edf2;
+    font-weight: 650;
+}
+
+h3 {
+    color: #dce3e8;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------------
+   TEXT
+   --------------------------------------------------------- */
+
+p {
+    color: #c5cbd2;
+}
+
+label {
+    color: #d5dbe0 !important;
+}
+
+
+/* ---------------------------------------------------------
+   DIVIDERS
+   --------------------------------------------------------- */
+
+hr {
+    border-color: rgba(255, 255, 255, 0.09);
+}
+
+
+/* ---------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------- */
+
+.stButton > button {
     width: 100%;
+
+    border-radius: 9px;
+
+    border: 1px solid rgba(94, 234, 212, 0.25);
+
+    background: rgba(20, 25, 30, 0.88);
+
+    color: #eaf2f3;
+
+    font-weight: 600;
+
+    padding: 0.65rem 1rem;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.15s ease;
+}
+
+.stButton > button:hover {
+    background: rgba(35, 55, 57, 0.92);
+
+    border-color: rgba(94, 234, 212, 0.65);
+
+    box-shadow:
+        0 0 18px rgba(94, 234, 212, 0.12);
+
+    transform: translateY(-1px);
+}
+
+
+/* ---------------------------------------------------------
+   FILE UPLOADER
+   --------------------------------------------------------- */
+
+[data-testid="stFileUploader"] {
+    background: rgba(13, 17, 21, 0.78);
+
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+
+    border-radius: 12px;
+
+    padding: 0.5rem;
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: rgba(94, 234, 212, 0.45);
+}
+
+
+/* ---------------------------------------------------------
+   METRICS
+   --------------------------------------------------------- */
+
+[data-testid="stMetric"] {
+    background: rgba(14, 18, 23, 0.82);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 12px;
+
+    padding: 1rem;
+
+    text-align: center;
+
+    backdrop-filter: blur(8px);
+}
+
+[data-testid="stMetricLabel"] {
+    color: #9ca6af !important;
+}
+
+[data-testid="stMetricValue"] {
+    color: #e8edf2 !important;
+}
+
+
+/* ---------------------------------------------------------
+   ALERTS
+   --------------------------------------------------------- */
+
+[data-testid="stAlert"] {
     border-radius: 10px;
 }
 
-.stMetric {
-    text-align: center;
+
+/* ---------------------------------------------------------
+   DATAFRAME
+   --------------------------------------------------------- */
+
+[data-testid="stDataFrame"] {
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ---------------------------------------------------------
+   IMAGES
+   --------------------------------------------------------- */
+
+[data-testid="stImage"] img {
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ---------------------------------------------------------
+   RADIO BUTTONS
+   --------------------------------------------------------- */
+
+[data-testid="stRadio"] label {
+    color: #d5dbe0 !important;
+}
+
+
+/* ---------------------------------------------------------
+   SLIDER
+   --------------------------------------------------------- */
+
+[data-testid="stSlider"] {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+
+/* ---------------------------------------------------------
+   INPUTS
+   --------------------------------------------------------- */
+
+[data-baseweb="select"] > div {
+    background-color: rgba(15, 19, 24, 0.9);
+
+    border-color: rgba(255, 255, 255, 0.12);
+
+    border-radius: 8px;
+}
+
+[data-baseweb="input"] {
+    background-color: rgba(15, 19, 24, 0.9);
+
+    border-radius: 8px;
+}
+
+
+/* ---------------------------------------------------------
+   EXPANDERS
+   --------------------------------------------------------- */
+
+[data-testid="stExpander"] {
+    background: rgba(13, 17, 21, 0.75);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 12px;
+}
+
+
+/* ---------------------------------------------------------
+   OPTIONAL GLASS CARD
+   --------------------------------------------------------- */
+
+.agro-card {
+    background: rgba(13, 17, 21, 0.78);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 14px;
+
+    padding: 1.5rem;
+
+    margin-bottom: 1rem;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.22);
+}
+
+
+/* ---------------------------------------------------------
+   RESULT CARD
+   --------------------------------------------------------- */
+
+.agro-result {
+    background: rgba(16, 30, 31, 0.82);
+
+    border: 1px solid rgba(94, 234, 212, 0.22);
+
+    border-radius: 12px;
+
+    padding: 1rem 1.25rem;
+
+    margin: 0.75rem 0;
+
+    backdrop-filter: blur(8px);
+}
+
+
+/* ---------------------------------------------------------
+   ACCENT
+   --------------------------------------------------------- */
+
+.agro-accent {
+    color: #5eead4;
+}
+
+
+/* ---------------------------------------------------------
+   SCROLLBAR
+   --------------------------------------------------------- */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #080a0d;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #30373d;
+
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4c5962;
 }
