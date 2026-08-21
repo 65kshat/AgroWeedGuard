@@ -100,8 +100,13 @@ pages = [
         "pages/model_comparison.py",
         title="Model Comparison",
         icon="📊"
-    )
+    ),
 
+    st.Page(
+    "pages/chatbot.py",
+    title="AI Assistant",
+    icon="🤖"
+    ),
 ]
 
 

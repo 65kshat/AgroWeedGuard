@@ -341,3 +341,80 @@ hr {
 ::-webkit-scrollbar-thumb:hover {
     background: #4c5962;
 }
+
+/* ---------------------------------------------------------
+   AGROWEEDGUARD HEADER
+   --------------------------------------------------------- */
+
+.agro-header {
+    position: relative;
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.agro-logo {
+    width: 110px;
+    height: 110px;
+
+    object-fit: contain;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    flex-shrink: 0;
+}
+
+.agro-header-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.agro-header-text h1 {
+    margin: 0;
+    padding: 0;
+
+    font-size: 3rem;
+    line-height: 1.1;
+
+    font-weight: 750;
+}
+
+.agro-subtitle {
+    margin-top: 8px;
+
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+/* ---------------------------------------------------------
+   STREAMLIT CHROME
+   --------------------------------------------------------- */
+
+/* Hide Deploy */
+[data-testid="stAppDeployButton"] {
+    display: none !important;
+}
+
+/* Hide Streamlit's three-dot menu */
+#MainMenu {
+    display: none !important;
+}
+
+/* Keep the header so the sidebar toggle remains available */
+[data-testid="stHeader"] {
+    background: transparent !important;
+}
+
+/* Remove footer */
+footer {
+    display: none !important;
+}

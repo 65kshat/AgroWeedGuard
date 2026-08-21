@@ -1,5 +1,5 @@
 # 1_Home.py
-
+import base64
 import streamlit as st
 from pathlib import Path
 
@@ -20,26 +20,43 @@ st.set_page_config(
 CURRENT_DIR = Path(__file__).parent
 FRONTEND_DIR = CURRENT_DIR.parent
 
-LOGO_PATH = FRONTEND_DIR / "assets" / "logo.png"
+LOGO_PATH = FRONTEND_DIR / "assets" / "ascii-image.png"
 BANNER_PATH = FRONTEND_DIR / "assets" / "background.jpg"
 
 # --------------------------------------------------
 # HEADER
 # --------------------------------------------------
 
-col1, col2 = st.columns([1, 5])
+if LOGO_PATH.exists():
 
-with col1:
-    if LOGO_PATH.exists():
-        st.image(str(LOGO_PATH), width=120)
+    with open(LOGO_PATH, "rb") as logo_file:
 
-with col2:
-    st.title("🌱 AgroWeedGuard")
-    st.subheader(
-        "AI-Powered Weed Detection and Classification System"
+        logo_base64 = base64.b64encode(
+            logo_file.read()
+        ).decode()
+
+    st.html(
+        f"""
+        <div class="agro-header">
+
+            <img
+                src="data:image/png;base64,{logo_base64}"
+                class="agro-logo"
+            >
+
+            <div class="agro-header-text">
+
+                <h1>AgroWeedGuard</h1>
+
+                <div class="agro-subtitle">
+                    AI-Powered Weed Detection and Classification System
+                </div>
+
+            </div>
+
+        </div>
+        """
     )
-
-st.divider()
 
 # --------------------------------------------------
 # HERO SECTION
