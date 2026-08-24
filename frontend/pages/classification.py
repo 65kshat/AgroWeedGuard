@@ -1,14 +1,22 @@
 from pathlib import Path
 import sys
+import time
+
+# --------------------------------------------------
+# PROJECT ROOT
+# --------------------------------------------------
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-import streamlit as st
-import time
 
+# --------------------------------------------------
+# IMPORTS
+# --------------------------------------------------
+
+import streamlit as st
 from PIL import Image
 
 from utils.cnn_utils import predict_cnn
@@ -52,6 +60,15 @@ model_choice = st.radio(
     ],
     horizontal=True
 )
+
+
+# --------------------------------------------------
+# SESSION STATE
+# --------------------------------------------------
+
+if "classification_results" not in st.session_state:
+
+    st.session_state.classification_results = []
 
 
 # --------------------------------------------------
@@ -126,11 +143,19 @@ if uploaded_files:
 
                 try:
 
+                    # ==================================
+                    # CNN
+                    # ==================================
+
                     if model_choice == "CNN (ResNet18)":
 
                         result = predict_cnn(
                             image
                         )
+
+                    # ==================================
+                    # ViT
+                    # ==================================
 
                     else:
 
@@ -138,9 +163,60 @@ if uploaded_files:
                             image
                         )
 
+                    # ----------------------------------
+                    # INFERENCE TIME
+                    # ----------------------------------
+
                     inference_time = (
                         time.perf_counter()
                         - start_time
+                    )
+
+                    # ----------------------------------
+                    # SAVE RESULT FOR AI ASSISTANT
+                    # ----------------------------------
+
+                    classification_record = {
+
+                        "image_name":
+                            uploaded_file.name,
+
+                        "model":
+                            model_choice,
+
+                        "class_id":
+                            result["class_id"],
+
+                        "class_name":
+                            result["class_name"],
+
+                        "confidence":
+                            result["confidence"],
+
+                        "inference_time":
+                            inference_time
+                    }
+
+                    # ----------------------------------
+                    # REPLACE EXISTING RESULT FROM
+                    # THE SAME IMAGE + MODEL
+                    # ----------------------------------
+
+                    st.session_state.classification_results = [
+                        existing
+                        for existing
+                        in st.session_state.classification_results
+                        if not (
+                            existing["image_name"]
+                            == uploaded_file.name
+                            and
+                            existing["model"]
+                            == model_choice
+                        )
+                    ]
+
+                    st.session_state.classification_results.append(
+                        classification_record
                     )
 
                     # ----------------------------------
@@ -161,11 +237,13 @@ if uploaded_files:
                     # ----------------------------------
 
                     st.caption(
-                        f"Class ID: {result['class_id']}"
+                        f"Class ID: "
+                        f"{result['class_id']}"
                     )
 
                     st.caption(
-                        f"Model: {model_choice}"
+                        f"Model: "
+                        f"{model_choice}"
                     )
 
                     st.caption(
@@ -176,7 +254,28 @@ if uploaded_files:
                 except Exception as e:
 
                     st.error(
-                        f"Classification Failed: {e}"
+                        f"Classification Failed: "
+                        f"{e}"
                     )
 
             st.divider()
+
+
+# --------------------------------------------------
+# CLASSIFICATION SESSION SUMMARY
+# --------------------------------------------------
+
+if st.session_state.classification_results:
+
+    with st.sidebar:
+
+        st.divider()
+
+        st.subheader(
+            "🔬 Classification Session"
+        )
+
+        st.caption(
+            f"{len(st.session_state.classification_results)} "
+            f"model result(s) available for AI Assistant."
+        )

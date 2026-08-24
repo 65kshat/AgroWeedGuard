@@ -1,5 +1,10 @@
 from pathlib import Path
 import sys
+import time
+
+# --------------------------------------------------
+# PROJECT ROOT
+# --------------------------------------------------
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
@@ -7,9 +12,11 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 
-import streamlit as st
-import time
+# --------------------------------------------------
+# IMPORTS
+# --------------------------------------------------
 
+import streamlit as st
 from PIL import Image
 
 from utils.yolo_utils import (
@@ -81,6 +88,15 @@ confidence_threshold = st.slider(
 
 
 # --------------------------------------------------
+# SESSION STATE
+# --------------------------------------------------
+
+if "detection_results" not in st.session_state:
+
+    st.session_state.detection_results = []
+
+
+# --------------------------------------------------
 # IMAGE UPLOAD
 # --------------------------------------------------
 
@@ -106,6 +122,8 @@ if uploaded_files:
         use_container_width=True
     ):
 
+        
+
         st.divider()
 
         st.header("🎯 Detection Results")
@@ -129,6 +147,10 @@ if uploaded_files:
             )
 
             try:
+
+                # ----------------------------------
+                # START INFERENCE TIMER
+                # ----------------------------------
 
                 start_time = time.perf_counter()
 
@@ -168,10 +190,61 @@ if uploaded_files:
                         )
                     )
 
+                # ----------------------------------
+                # INFERENCE TIME
+                # ----------------------------------
+
                 inference_time = (
                     time.perf_counter()
                     - start_time
                 )
+
+                # ==================================
+                    # SAVE RESULTS FOR AI ASSISTANT
+                    # ==================================
+
+                detection_record = {
+
+                        "image_name": uploaded_file.name,
+
+                        "model": model_choice,
+
+                        "confidence_threshold": confidence_threshold,
+
+                        "inference_time": inference_time,
+
+                        "detections": [
+
+                            {
+                                "class_name": detection["class_name"],
+                                "confidence": detection["confidence"]
+                            }
+
+                            for detection in detections
+                        ]
+                    }
+
+                    # ----------------------------------
+                    # REMOVE ONLY AN EXISTING RESULT
+                    # FOR THE SAME IMAGE + MODEL
+                    # ----------------------------------
+
+                st.session_state.detection_results = [
+                        existing
+                        for existing in st.session_state.detection_results
+                        if not (
+                            existing["image_name"] == uploaded_file.name
+                            and existing["model"] == model_choice
+                        )
+                    ]
+
+                    # ----------------------------------
+                    # ADD NEW RESULT
+                    # ----------------------------------
+
+                st.session_state.detection_results.append(
+                        detection_record
+                    )
 
                 # ==================================
                 # IMAGE RESULTS
@@ -283,3 +356,21 @@ if uploaded_files:
                 )
 
             st.divider()
+
+
+# --------------------------------------------------
+# DETECTION SUMMARY FOR DEBUGGING
+# --------------------------------------------------
+
+if st.session_state.detection_results:
+
+    with st.sidebar:
+
+        st.divider()
+
+        st.subheader("🔬 Detection Session")
+
+        st.caption(
+            f"{len(st.session_state.detection_results)} "
+            f"model result(s) available for AI Assistant."
+        )

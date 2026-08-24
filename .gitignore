@@ -37,7 +37,7 @@ models/ViT/
 
 notebooks/runs/
 
-utils/sanity_check.py
+utils/sanity_check.py/
 
 *.tmp
 *.log
