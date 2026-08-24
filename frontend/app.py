@@ -28,13 +28,19 @@ st.set_page_config(
 
 
 # --------------------------------------------------
-# LOAD CSS + BACKGROUND IMAGE
+# LOAD CSS + BACKGROUND IMAGES
 # --------------------------------------------------
 
 if CSS_PATH.exists():
 
     with open(CSS_PATH, "r", encoding="utf-8") as f:
         css = f.read()
+
+    # --------------------------------------------------
+    # MAIN BACKGROUND
+    # --------------------------------------------------
+
+    
 
     if BACKGROUND_PATH.exists():
 
@@ -45,19 +51,45 @@ if CSS_PATH.exists():
             ).decode()
 
         background_url = (
-            f"url(data:image/png;base64,{encoded_image})"
+            f"url(data:image/jpeg;base64,{encoded_image})"
         )
 
         css = css.replace(
-            "var(--agro-background-image)",
-            background_url
+    "AGRO_BACKGROUND_IMAGE",
+    background_url
+)
+
+    # --------------------------------------------------
+    # SIDEBAR BACKGROUND
+    # --------------------------------------------------
+
+    SIDEBAR_PATH = ASSETS_DIR / "sidebar.jpg"
+
+    if SIDEBAR_PATH.exists():
+
+        with open(SIDEBAR_PATH, "rb") as image_file:
+
+            encoded_sidebar = base64.b64encode(
+                image_file.read()
+            ).decode()
+
+        sidebar_url = (
+            f"url(data:image/jpeg;base64,{encoded_sidebar})"
         )
+
+        css = css.replace(
+    "AGRO_SIDEBAR_IMAGE",
+    sidebar_url
+)
+
+    # --------------------------------------------------
+    # APPLY CSS
+    # --------------------------------------------------
 
     st.markdown(
         f"<style>{css}</style>",
         unsafe_allow_html=True
     )
-    
 # --------------------------------------------------
 # KINETIC GRID BACKGROUND
 # --------------------------------------------------

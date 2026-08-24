@@ -19,7 +19,7 @@
 }
 
 /* ---------------------------------------------------------
-   BACKGROUND IMAGE
+   MAIN BACKGROUND
    --------------------------------------------------------- */
 
 [data-testid="stAppViewContainer"] {
@@ -28,20 +28,28 @@
             rgba(3, 12, 8, 0.62),
             rgba(3, 12, 8, 0.72)
         ),
-        var(--agro-background-image);
+        AGRO_BACKGROUND_IMAGE;
 
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
 }
 
+
 /* ---------------------------------------------------------
-   MAIN CONTENT
+   MAIN CONTENT TRANSPARENCY
    --------------------------------------------------------- */
 
-
 [data-testid="stMain"] {
-    background: transparent;
+    background: transparent !important;
+}
+
+[data-testid="stMainBlockContainer"] {
+    background: transparent !important;
+}
+
+.main {
+    background: transparent !important;
 }
 
 
@@ -50,12 +58,35 @@
    --------------------------------------------------------- */
 
 [data-testid="stSidebar"] {
-    background: rgba(10, 13, 17, 0.92);
+    background:
+        linear-gradient(
+            rgba(5, 12, 8, 0.30),
+            rgba(5, 12, 8, 0.30)
+        ),
+        AGRO_SIDEBAR_IMAGE !important;
+
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+
     border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+
+/* ---------------------------------------------------------
+   SIDEBAR INNER CONTENT
+   --------------------------------------------------------- */
+
+[data-testid="stSidebarContent"] {
+    background: transparent !important;
+}
+
+[data-testid="stSidebarUserContent"] {
+    background: transparent !important;
+}
+
 [data-testid="stSidebar"] p {
-    color: #c5cbd2;
+    color: #f0f4f2;
 }
 
 
