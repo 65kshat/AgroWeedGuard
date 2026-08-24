@@ -37,6 +37,8 @@ models/ViT/
 
 notebooks/runs/
 
+utils/sanity_check.py
+
 *.tmp
 *.log
 .DS_Store

@@ -8,200 +8,79 @@ from PIL import Image
 from utils.model_loader import load_yolo
 from utils.image_utils import get_class_name
 
-# --------------------------------------------------
-# Predict
-# --------------------------------------------------
 
-def predict_yolo(
-    image,
-    confidence_threshold=0.5
-):
-
+# Prediction Function
+def predict_yolo(image, confidence_threshold=0.5):
     model = load_yolo()
 
-    results = model(
-        image,
-        conf=confidence_threshold,
-        verbose=False
-    )
-
+    results = model(image, conf=confidence_threshold, verbose=False)
     return results
 
 
-# --------------------------------------------------
-# Draw Bounding Boxes
-# --------------------------------------------------
-
-def draw_yolo_boxes(
-    image,
-    confidence_threshold=0.5
-):
-
-    results = predict_yolo(
-        image,
-        confidence_threshold
-    )
-
+# Drawing Bounding Boxes
+def draw_yolo_boxes(image, confidence_threshold=0.5):
+    results = predict_yolo(image, confidence_threshold)
     image_np = np.array(image)
 
     for result in results:
-
         boxes = result.boxes
 
         for box in boxes:
-
-            x1, y1, x2, y2 = (
-                box.xyxy[0]
-                .cpu()
-                .numpy()
-                .astype(int)
-            )
-
+            x1, y1, x2, y2 = (box.xyxy[0].cpu().numpy().astype(int))
             confidence = float(box.conf[0])
-
             class_id = int(box.cls[0])
 
-            label = (
-                f"{get_class_name(class_id)} "
-                f"{confidence:.2f}"
-            )
+            label = (f"{get_class_name(class_id)} "
+                        f"{confidence:.2f}")
 
-            cv2.rectangle(
-                image_np,
-                (x1, y1),
-                (x2, y2),
-                (0, 255, 0),
-                2
-            )
-
-            cv2.putText(
-                image_np,
-                label,
-                (x1, y1 - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.6,
-                (0, 255, 0),
-                2
-            )
+            cv2.rectangle(image_np, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(image_np, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
     return image_np
 
-# --------------------------------------------------
+
 # Detection Summary
-# --------------------------------------------------
-
-def get_yolo_predictions(
-    image,
-    confidence_threshold=0.5
-):
-
-    results = predict_yolo(
-        image,
-        confidence_threshold
-    )
+def get_yolo_predictions(image, confidence_threshold=0.5):
+    results = predict_yolo(image, confidence_threshold)
 
     detections = []
 
     for result in results:
-
         boxes = result.boxes
 
         for box in boxes:
-
             class_id = int(box.cls[0])
-
             confidence = float(box.conf[0])
 
-            detections.append(
-                {
-                    "class_id": class_id,
-                    "class_name": get_class_name(class_id),
-                    "confidence": round(
-                        confidence,
-                        4
-                    )
-                }
-            )
+            detections.append({"class_id": class_id, "class_name": get_class_name(class_id), "confidence": round(confidence, 4)})
 
     return detections
-# --------------------------------------------------
+
+
 # Combined Prediction
-# --------------------------------------------------
-
 def run_yolo(image):
-
     results = predict_yolo(image)
-
     image_np = np.array(image).copy()
-
     detections = []
 
     for result in results:
-
         boxes = result.boxes
 
         for box in boxes:
+            x1, y1, x2, y2 = (box.xyxy[0].cpu().numpy().astype(int))
+            confidence = float(box.conf[0])
+            class_id = int(box.cls[0])
+            class_name = get_class_name(class_id)
 
-            x1, y1, x2, y2 = (
-                box.xyxy[0]
-                .cpu()
-                .numpy()
-                .astype(int)
-            )
-
-            confidence = float(
-                box.conf[0]
-            )
-
-            class_id = int(
-                box.cls[0]
-            )
-
-            class_name = get_class_name(
-                class_id
-            )
-
-            # ------------------------------
             # Detection Information
-            # ------------------------------
+            detections.append({"class_id": class_id, "class_name": class_name, "confidence": round(confidence, 4)})
 
-            detections.append({
-                "class_id": class_id,
-                "class_name": class_name,
-                "confidence": round(
-                    confidence,
-                    4
-                )
-            })
-
-            # ------------------------------
             # Bounding Box
-            # ------------------------------
-
             label = (
-                f"{class_name} "
-                f"{confidence:.2f}"
-            )
+                        f"{class_name} "
+                        f"{confidence:.2f}")
 
-            cv2.rectangle(
-                image_np,
-                (x1, y1),
-                (x2, y2),
-                (0, 255, 0),
-                2
-            )
+            cv2.rectangle(image_np, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(image_np, label, (x1, max(y1 - 10, 20)), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-            cv2.putText(
-                image_np,
-                label,
-                (x1, max(y1 - 10, 20)),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.6,
-                (0, 255, 0),
-                2
-            )
-
-    return {
-        "detections": detections,
-        "image": image_np
-    }
+    return {"detections": detections, "image": image_np}
