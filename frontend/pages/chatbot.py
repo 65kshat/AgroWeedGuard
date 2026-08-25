@@ -1,29 +1,16 @@
-from pathlib import Path
-import sys
 import os
+import sys
 
-# --------------------------------------------------
-# PROJECT ROOT
-# --------------------------------------------------
+import streamlit as st
+
+from dotenv import load_dotenv
+from openai import OpenAI
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
-
-
-# --------------------------------------------------
-# IMPORTS
-# --------------------------------------------------
-
-import streamlit as st
-from dotenv import load_dotenv
-from openai import OpenAI
-
-
-# --------------------------------------------------
-# ENVIRONMENT
-# --------------------------------------------------
 
 load_dotenv(ROOT_DIR / ".env")
 
@@ -31,90 +18,55 @@ NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
 LLM_MODEL = os.getenv("LLM_MODEL")
 
 
-# --------------------------------------------------
-# PAGE CONFIG
-# --------------------------------------------------
-
-st.set_page_config(
-    page_title="AI Assistant | AgroWeedGuard",
-    page_icon="🤖",
-    layout="wide"
-)
-
-
-# --------------------------------------------------
-# API VALIDATION
-# --------------------------------------------------
+st.set_page_config(page_title="AI Assistant | AgroWeedGuard", page_icon="🤖", layout="wide")
 
 if not NVIDIA_API_KEY:
-    st.error(
-        "NVIDIA API key not found. "
-        "Please check your .env file."
-    )
+    st.error("NVIDIA API key not found. "
+                "Please check your .env file.")
     st.stop()
 
 if not LLM_MODEL:
-    st.error(
-        "LLM model not configured. "
-        "Please check your .env file."
-    )
+    st.error("LLM model not configured. "
+                "Please check your .env file.")
     st.stop()
 
 
-# --------------------------------------------------
-# NVIDIA CLIENT
-# --------------------------------------------------
-
-client = OpenAI(
-    base_url="https://integrate.api.nvidia.com/v1",
-    api_key=NVIDIA_API_KEY
-)
+client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=NVIDIA_API_KEY)
 
 
-# --------------------------------------------------
-# SYSTEM PROMPT
-# --------------------------------------------------
-
+# Creating Base System Prompt
 SYSTEM_PROMPT = """
-/no_think
-You are AgroWeedGuard AI, an agricultural AI assistant
-integrated into an AI-powered weed detection and
-classification system.
+                /no_think
+                You are AgroWeedGuard AI, an agricultural AI assistant
+                integrated into an AI-powered weed detection and
+                classification system.
 
-You help users understand:
+                You help users understand:
 
-- Detected weed species
-- Classification predictions
-- Model confidence scores
-- Differences between AI models
-- Potential crop impact
-- General weed management
-- AgroWeedGuard's AI models
+                - Detected weed species
+                - Classification predictions
+                - Model confidence scores
+                - Differences between AI models
+                - Potential crop impact
+                - General weed management
+                - AgroWeedGuard's AI models
 
-Important rules:
+                Important rules:
 
-1. Model predictions are not guaranteed to be correct.
-2. Distinguish model predictions from agricultural knowledge.
-3. Treat supplied results as predictions, not ground truth.
-4. Compare models when multiple results are available.
-5. Mention disagreements between models.
-6. Do not invent weeds or results.
-7. Be practical, clear, and concise.
-8. Do not claim to have personally inspected an image.
-"""
+                1. Model predictions are not guaranteed to be correct.
+                2. Distinguish model predictions from agricultural knowledge.
+                3. Treat supplied results as predictions, not ground truth.
+                4. Compare models when multiple results are available.
+                5. Mention disagreements between models.
+                6. Do not invent weeds or results.
+                7. Be practical, clear, and concise.
+                8. Do not claim to have personally inspected an image.
+                """
 
 
-# --------------------------------------------------
-# SESSION STATE
-# --------------------------------------------------
-
+# Session State
 if "chat_messages" not in st.session_state:
-    st.session_state.chat_messages = [
-        {
-            "role": "system",
-            "content": SYSTEM_PROMPT
-        }
-    ]
+    st.session_state.chat_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
 if "ai_context_signature" not in st.session_state:
     st.session_state.ai_context_signature = None
@@ -123,510 +75,252 @@ if "initial_analysis_done" not in st.session_state:
     st.session_state.initial_analysis_done = False
 
 
-# --------------------------------------------------
-# GET MODEL RESULTS
-# --------------------------------------------------
-
-detection_results = st.session_state.get(
-    "detection_results",
-    []
-)
-
-classification_results = st.session_state.get(
-    "classification_results",
-    []
-)
+# Get Model Results
+detection_results = st.session_state.get("detection_results", [])
+classification_results = st.session_state.get("classification_results", [])
 
 has_detection = bool(detection_results)
 has_classification = bool(classification_results)
 has_results = has_detection or has_classification
 
 
-# --------------------------------------------------
-# BUILD AI CONTEXT
-# --------------------------------------------------
+# AI Context
 
 def build_ai_context():
-
     context = [
-        "AGROWEEDGUARD ANALYSIS RESULTS",
-        "",
-        "The following are predictions generated by "
-        "AgroWeedGuard AI models.",
-        "They are not guaranteed ground truth."
-    ]
+                "AGROWEEDGUARD ANALYSIS RESULTS",
+                "",
+                "The following are predictions generated by "
+                "AgroWeedGuard AI models.",
+                "They are not guaranteed ground truth."]
 
-    # --------------------------------------------------
-    # DETECTION
-    # --------------------------------------------------
-
+    # Detection
     if detection_results:
-
         context.append("")
         context.append("=== DETECTION RESULTS ===")
 
         for result in detection_results:
+            image_name = result.get("image_name", "Unknown image")
+            model = result.get("model", "Unknown model")
 
-            image_name = result.get(
-                "image_name",
-                "Unknown image"
-            )
+            threshold = result.get("confidence_threshold")
+            inference_time = result.get("inference_time")
 
-            model = result.get(
-                "model",
-                "Unknown model"
-            )
-
-            threshold = result.get(
-                "confidence_threshold"
-            )
-
-            inference_time = result.get(
-                "inference_time"
-            )
-
-            detections = result.get(
-                "detections",
-                []
-            )
-
+            detections = result.get("detections", [])
             context.append("")
-            context.append(
-                f"Image: {image_name}"
-            )
-
-            context.append(
-                f"Detection Model: {model}"
-            )
+            context.append(f"Image: {image_name}")
+            context.append(f"Detection Model: {model}")
 
             if threshold is not None:
-                context.append(
-                    f"Confidence Threshold: "
-                    f"{threshold:.2f}"
-                )
+                context.append(f"Confidence Threshold: "
+                                f"{threshold:.2f}")
 
             if inference_time is not None:
-                context.append(
-                    f"Inference Time: "
-                    f"{inference_time * 1000:.2f} ms"
-                )
+                context.append(f"Inference Time: "
+                                f"{inference_time * 1000:.2f} ms")
 
             if not detections:
-
-                context.append(
-                    "Detections: None"
-                )
+                context.append("Detections: None")
 
             else:
-
-                context.append(
-                    f"Number of detections: "
-                    f"{len(detections)}"
-                )
+                context.append(f"Number of detections: "
+                                f"{len(detections)}")
 
                 for detection in detections:
+                    class_name = detection.get("class_name", "Unknown")
+                    confidence = detection.get("confidence", 0)
 
-                    class_name = detection.get(
-                        "class_name",
-                        "Unknown"
-                    )
+                    context.append(f"- {class_name}: "
+                                    f"{confidence * 100:.2f}% confidence")
 
-                    confidence = detection.get(
-                        "confidence",
-                        0
-                    )
-
-                    context.append(
-                        f"- {class_name}: "
-                        f"{confidence * 100:.2f}% confidence"
-                    )
-
-    # --------------------------------------------------
-    # CLASSIFICATION
-    # --------------------------------------------------
-
+    # Classification Results
     if classification_results:
 
         context.append("")
         context.append("=== CLASSIFICATION RESULTS ===")
 
         for result in classification_results:
+            image_name = result.get("image_name", "Unknown image")
+            model = result.get("model", "Unknown model")
+            class_name = result.get("class_name", "Unknown")
+            class_id = result.get("class_id", "Unknown")
+            confidence = result.get("confidence", 0)
 
-            image_name = result.get(
-                "image_name",
-                "Unknown image"
-            )
-
-            model = result.get(
-                "model",
-                "Unknown model"
-            )
-
-            class_name = result.get(
-                "class_name",
-                "Unknown"
-            )
-
-            class_id = result.get(
-                "class_id",
-                "Unknown"
-            )
-
-            confidence = result.get(
-                "confidence",
-                0
-            )
-
-            inference_time = result.get(
-                "inference_time"
-            )
+            inference_time = result.get("inference_time")
 
             context.append("")
-            context.append(
-                f"Image: {image_name}"
-            )
+            context.append(f"Image: {image_name}")
+            context.append(f"Classification Model: {model}")
 
-            context.append(
-                f"Classification Model: {model}"
-            )
-
-            context.append(
-                f"Prediction: {class_name}"
-            )
-
-            context.append(
-                f"Class ID: {class_id}"
-            )
-
-            context.append(
-                f"Confidence: "
-                f"{confidence * 100:.2f}%"
-            )
+            context.append(f"Prediction: {class_name}")
+            context.append(f"Class ID: {class_id}")
+            context.append(f"Confidence: "
+                            f"{confidence * 100:.2f}%")
 
             if inference_time is not None:
-                context.append(
-                    f"Inference Time: "
-                    f"{inference_time * 1000:.2f} ms"
-                )
+                context.append(f"Inference Time: "
+                                f"{inference_time * 1000:.2f} ms")
 
     return "\n".join(context)
 
 
-# --------------------------------------------------
-# CONTEXT SIGNATURE
-# --------------------------------------------------
-
+# Context Signature
 def get_context_signature():
-
-    return (
-        str(detection_results),
-        str(classification_results)
-    )
+    return (str(detection_results), str(classification_results))
 
 
-# --------------------------------------------------
-# PAGE HEADER
-# --------------------------------------------------
-
+# Page
 st.title("🤖 AgroWeedGuard AI Assistant")
-
-st.markdown(
-    """
-Ask questions about detected weeds, model predictions,
-crop impact, weed management, or the AgroWeedGuard models.
-"""
-)
-
+st.markdown("""
+            Ask questions about detected weeds, model predictions,
+            crop impact, weed management, or the AgroWeedGuard models.
+            """)
 st.divider()
 
 
-# --------------------------------------------------
-# NO RESULTS
-# --------------------------------------------------
-
+# Case of no result
 if not has_results:
+    st.info("""
+            🌱 No AgroWeedGuard analysis is available yet.
 
-    st.info(
-        """
-🌱 **No AgroWeedGuard analysis is available yet.**
+            Please run Detection, Classification, or both
+            before using the AI Assistant.
 
-Please run **Detection**, **Classification**, or both
-before using the AI Assistant.
-
-The results generated by those models will automatically
-be provided to the AI Assistant as context.
-"""
-    )
+            The results generated by those models will automatically
+            be provided to the AI Assistant as context.
+            """)
 
 
-# --------------------------------------------------
-# AVAILABLE RESULTS
-# --------------------------------------------------
-
+# Available Results
 else:
-
     if has_detection and has_classification:
-
-        st.success(
-            "✅ Detection and classification results "
-            "are available to AgroWeedGuard AI."
-        )
+        st.success("✅ Detection and classification results "
+                    "are available to AgroWeedGuard AI.")
 
     elif has_detection:
-
-        st.success(
-            "✅ Detection results are available "
-            "to AgroWeedGuard AI."
-        )
+        st.success("✅ Detection results are available "
+                    "to AgroWeedGuard AI.")
 
     else:
-
-        st.success(
-            "✅ Classification results are available "
-            "to AgroWeedGuard AI."
-        )
+        st.success("✅ Classification results are available "
+                    "to AgroWeedGuard AI.")
 
 
-# --------------------------------------------------
-# INITIAL ANALYSIS
-# --------------------------------------------------
-
+# Initial Analysis
 if has_results:
-
     current_signature = get_context_signature()
-
-    new_results = (
-        current_signature
-        != st.session_state.ai_context_signature
-    )
+    new_results = (current_signature != st.session_state.ai_context_signature)
 
     if new_results:
-
         ai_context = build_ai_context()
 
         initial_prompt = f"""
-Analyze the following AgroWeedGuard model results.
+                            Analyze the following AgroWeedGuard model results.
 
-Provide an initial assessment of the findings.
+                            Provide an initial assessment of the findings.
 
-Please:
+                            Please:
 
-- Identify the detected or classified weeds.
-- Compare models when possible.
-- Highlight agreements and disagreements.
-- Mention particularly high or low confidence results.
-- Point out anything unusual or uncertain.
-- Provide useful agricultural context.
-- Do not invent information.
+                            - Identify the detected or classified weeds.
+                            - Compare models when possible.
+                            - Highlight agreements and disagreements.
+                            - Mention particularly high or low confidence results.
+                            - Point out anything unusual or uncertain.
+                            - Provide useful agricultural context.
+                            - Do not invent information.
 
-AGROWEEDGUARD RESULTS:
+                            AGROWEEDGUARD RESULTS:
 
-{ai_context}
-"""
+                            {ai_context}
+                            """
 
-        # ------------------------------------------
-        # SAVE CONTEXT
-        # ------------------------------------------
-
-        st.session_state.ai_context_signature = (
-            current_signature
-        )
-
+        # Saving Context
+        st.session_state.ai_context_signature = (current_signature)
         st.session_state.chat_messages = [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT
-            },
-            {
-                "role": "user",
-                "content": initial_prompt
-            }
-        ]
+                                            {"role": "system", "content": SYSTEM_PROMPT},
+                                            {"role": "user", "content": initial_prompt}]
 
-        # ------------------------------------------
-        # NVIDIA REQUEST
-        # ------------------------------------------
-
-        with st.spinner(
-            "🌱 AgroWeedGuard AI is analyzing the results..."
-        ):
-
+        # Nvidia Request
+        with st.spinner("🌱 AgroWeedGuard AI is analyzing the results..."):
             try:
+                response = client.chat.completions.create(model=LLM_MODEL,
+                                                            messages=(st.session_state.chat_messages),
+                                                            temperature=0.6,
+                                                            top_p=0.95,
+                                                            max_tokens=800,
+                                                            stream=False)
 
-                response = client.chat.completions.create(
+                answer = (response.choices[0].message.content)
 
-                    model=LLM_MODEL,
-
-                    messages=(
-                        st.session_state.chat_messages
-                    ),
-
-                    temperature=0.6,
-                    top_p=0.95,
-                    max_tokens=800,
-                    stream=False
-                )
-
-                answer = (
-                    response
-                    .choices[0]
-                    .message
-                    .content
-                )
-
-                st.session_state.chat_messages.append(
-                    {
-                        "role": "assistant",
-                        "content": answer
-                    }
-                )
-
+                st.session_state.chat_messages.append({"role": "assistant", "content": answer})
                 st.session_state.initial_analysis_done = True
 
             except Exception as e:
-
                 # Allow another attempt if the request failed.
                 st.session_state.ai_context_signature = None
-
-                st.error(
-                    f"Initial AI analysis failed: {e}"
-                )
+                st.error(f"Initial AI analysis failed: {e}")
 
 
-# --------------------------------------------------
-# DISPLAY CHAT
-# --------------------------------------------------
-
+# Displaying Chat
 for message in st.session_state.chat_messages:
-
     if message["role"] == "system":
         continue
 
-    with st.chat_message(
-        message["role"]
-    ):
-
-        st.markdown(
-            message["content"]
-        )
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 
-# --------------------------------------------------
-# CHAT INPUT
-# --------------------------------------------------
-
+# Chat Input
 if has_results:
-
-    user_prompt = st.chat_input(
-        "Ask AgroWeedGuard AI..."
-    )
+    user_prompt = st.chat_input("Ask AgroWeedGuard AI...")
 
 else:
-
     user_prompt = None
 
 
-# --------------------------------------------------
-# NORMAL CHAT
-# --------------------------------------------------
-
+# Normal Chat
 if user_prompt:
-
-    st.session_state.chat_messages.append(
-        {
-            "role": "user",
-            "content": user_prompt
-        }
-    )
+    st.session_state.chat_messages.append({"role": "user", "content": user_prompt})
 
     with st.chat_message("user"):
-
         st.markdown(user_prompt)
 
     with st.chat_message("assistant"):
-
-        with st.spinner(
-            "🤖 AgroWeedGuard AI is thinking..."
-        ):
-
+        with st.spinner("🤖 AgroWeedGuard AI is thinking..."):
             try:
-
-                response = client.chat.completions.create(
-
-                    model=LLM_MODEL,
-
-                    messages=(
-                        st.session_state.chat_messages
-                    ),
-
-                    temperature=0.6,
-                    top_p=0.95,
-                    max_tokens=1200,
-                    stream=False
-                )
-
-                answer = (
-                    response
-                    .choices[0]
-                    .message
-                    .content
-                )
+                response = client.chat.completions.create(model=LLM_MODEL,
+                                                            messages=(st.session_state.chat_messages),
+                                                            temperature=0.6,
+                                                            top_p=0.95,
+                                                            max_tokens=1200,
+                                                            stream=False)
+                
+                answer = (response.choices[0].message.content)
 
                 st.markdown(answer)
-
-                st.session_state.chat_messages.append(
-                    {
-                        "role": "assistant",
-                        "content": answer
-                    }
-                )
+                st.session_state.chat_messages.append({"role": "assistant", "content": answer})
 
             except Exception as e:
-
-                st.error(
-                    f"LLM request failed: {e}"
-                )
+                st.error(f"LLM request failed: {e}")
 
 
-# --------------------------------------------------
-# SIDEBAR
-# --------------------------------------------------
-
+# Sidebar
 with st.sidebar:
-
     st.subheader("🤖 AgroWeedGuard AI")
-
-    st.caption(
-        f"Model: {LLM_MODEL}"
-    )
+    st.caption(f"Model: {LLM_MODEL}")
 
     st.divider()
-
     st.subheader("📊 Analysis Context")
 
-    st.write(
-        f"🔍 Detection results: "
-        f"**{len(detection_results)}**"
-    )
+    st.write(f"🔍 Detection results: "
+                f"{len(detection_results)}")
 
-    st.write(
-        f"🌿 Classification results: "
-        f"**{len(classification_results)}**"
-    )
-
+    st.write(f"🌿 Classification results: "
+                f"{len(classification_results)}")
     st.divider()
 
-    if st.button(
-        "🗑️ Clear Conversation",
-        use_container_width=True
-    ):
-
-        st.session_state.chat_messages = [
-            {
-                "role": "system",
-                "content": SYSTEM_PROMPT
-            }
-        ]
+    if st.button("🗑️ Clear Conversation", use_container_width=True):
+        st.session_state.chat_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
         st.session_state.initial_analysis_done = False
         st.session_state.ai_context_signature = None
