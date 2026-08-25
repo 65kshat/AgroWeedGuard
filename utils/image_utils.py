@@ -5,18 +5,18 @@ from PIL import Image
 
 # Class Labels
 CLASS_NAMES = {
-    0: "weed: mollugo verticillata",
-    1: "weed: amaranthus palmeri",
-    2: "weed: eclipta",
-    3: "weed: portulaca oleracea",
-    4: "weed: amaranthus tuberculatus",
-    5: "weed: euphorbia maculata",
-    6: "weed: ipomoea indica",
-    7: "weed: eleusine indica",
-    8: "weed: sida rhombifolia",
-    9: "weed: senna obtusifolia",
-    10: "weed: physalis angulata",
-    11: "weed: ambrosia artemisiifolia"}
+    0: "Weed: Mollugo Verticillata",
+    1: "Weed: Amaranthus Palmeri",
+    2: "Weed: Eclipta",
+    3: "Weed: Portulaca Oleracea",
+    4: "Weed: Amaranthus Tuberculatus",
+    5: "Weed: Euphorbia Maculata",
+    6: "Weed: Ipomoea Indica",
+    7: "Weed: Eleusine Indica",
+    8: "Weed: Sida Rhombifolia",
+    9: "Weed: Senna Obtusifolia",
+    10: "Weed: Physalis Angulata",
+    11: "Weed: Ambrosia Artemisiifolia"}
 
 
 def get_class_name(class_id):

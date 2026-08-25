@@ -3,15 +3,15 @@ import time
 
 import streamlit as st
 from PIL import Image
-
 from pathlib import Path
-from utils.yolo_utils import (draw_yolo_boxes, get_yolo_predictions)
-from utils.fasterrcnn_utils import (draw_fasterrcnn_boxes, get_fasterrcnn_predictions)
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+from utils.yolo_utils import (draw_yolo_boxes, get_yolo_predictions)
+from utils.fasterrcnn_utils import (draw_fasterrcnn_boxes, get_fasterrcnn_predictions)
 
 
 st.set_page_config(page_title="Detection | AgroWeedGuard", page_icon="🔍", layout="wide")
@@ -128,7 +128,7 @@ if uploaded_files:
                         confidence = detection["confidence"]
 
                         st.write(
-                                    f"**Detected - ** "
+                                    f"Detected -  "
                                     f"{class_name}")
 
                         st.progress(confidence, text=(

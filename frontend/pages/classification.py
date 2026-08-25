@@ -2,16 +2,18 @@
 import sys
 import time
 
-import streamlit as st
-from PIL import Image
 from pathlib import Path
-from utils.cnn_utils import predict_cnn
-from utils.vit_utils import predict_vit
-
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+import streamlit as st
+from PIL import Image
+
+from utils.cnn_utils import predict_cnn
+from utils.vit_utils import predict_vit
+
 
 st.set_page_config(page_title="Classification | AgroWeedGuard", page_icon="🌿", layout="wide")
 st.title("🌿 Weed Classification")

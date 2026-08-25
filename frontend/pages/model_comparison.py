@@ -5,15 +5,15 @@ import streamlit as st
 from PIL import Image
 from pathlib import Path
 
-from utils.yolo_utils import run_yolo
-from utils.fasterrcnn_utils import run_fasterrcnn
-from utils.cnn_utils import predict_cnn
-from utils.vit_utils import predict_vit
-
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
+
+from utils.yolo_utils import run_yolo
+from utils.fasterrcnn_utils import run_fasterrcnn
+from utils.cnn_utils import predict_cnn
+from utils.vit_utils import predict_vit
 
 
 st.set_page_config(page_title="Model Comparison | AgroWeedGuard", page_icon="📊", layout="wide")
