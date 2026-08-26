@@ -139,15 +139,43 @@ if uploaded_files:
                 st.error(
                             f"Detection Failed for "
                             f"{uploaded_file.name}: {e}")
-            st.divider()
+                st.divider()
 
 
-# Detection Summary
-if st.session_state.detection_results:
-    with st.sidebar:
+# Sidebar
+with st.sidebar:
+    st.subheader("🔍 Detection")
+
+    st.caption("Locate weeds within field images using "
+                "object detection models.")
+
+    st.divider()
+    st.subheader("🤖 Available Models")
+
+    st.markdown("""
+                    YOLOv8
+                    - Fast object detection
+                    - Suitable for real-time analysis
+
+                    Faster R-CNN
+                    - Region-based detection
+                    - Detailed object localization
+                    """)
+    st.divider()
+
+    st.subheader("📊 Model Performance")
+    st.caption("YOLOv8")
+    st.metric("Accuracy", "XX.XX%")
+
+    st.caption("Faster R-CNN")
+    st.metric("Accuracy", "XX.XX%")
+
+    st.divider()
+    
+    if st.session_state.detection_results:
         st.divider()
 
-        st.subheader("🔬 Detection Session")
-        st.caption(
-                    f"{len(st.session_state.detection_results)} "
-                    f"model result(s) available for AI Assistant.")
+        st.subheader("🔬 Session")
+
+        st.caption(f"{len(st.session_state.detection_results)} "
+                    "model result(s) available for AI Assistant.")

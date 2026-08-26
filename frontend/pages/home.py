@@ -144,7 +144,54 @@ st.markdown("""
             - Cloud Deployment
             """)
 
-
-
 st.divider()
 st.caption("AgroWeedGuard Capstone Project | AI-Powered Weed Detection and Classification")
+
+# Sidebar
+with st.sidebar:
+    st.subheader("🌱 AgroWeedGuard")
+    st.caption("AI-powered agricultural weed analysis platform.")
+    st.divider()
+
+    st.subheader("📋 Project Status")
+    st.success("System Operational")
+    st.caption("All core detection, classification, "
+                "comparison, and AI Assistant modules "
+                "are available.")
+    st.divider()
+
+    st.subheader("📊 At a Glance")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("AI Models", "4")
+        st.metric("Weed Classes", "12")
+
+    with col2:
+        st.metric("Detection", "2")
+        st.metric("Classification", "2")
+    st.divider()
+
+    st.subheader("🎯 Analysis Pipeline")
+    st.markdown("""
+                1. Input  
+                Agricultural image
+
+                2. Detection  
+                Locate weeds
+
+                3. Classification  
+                Identify species
+
+                4. Comparison  
+                Evaluate models
+
+                5. AI Assistant
+                Interpret results
+                """)
+    st.divider()
+
+    st.subheader("💡 Quick Tip")
+    st.info("For the most complete analysis, run both "
+            "Detection and Classification before opening "
+            "the AI Assistant.")

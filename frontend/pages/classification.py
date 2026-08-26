@@ -112,3 +112,37 @@ if st.session_state.classification_results:
         st.subheader("🔬 Classification Session")
         st.caption(f"{len(st.session_state.classification_results)} "
                     f"model result(s) available for AI Assistant.")
+
+# Sidebar
+with st.sidebar:
+    st.subheader("🌿 Classification")
+
+    st.caption("Identify weed species from agricultural "
+                "images using image classification models.")
+    st.divider()
+
+    st.subheader("🤖 Available Models")
+    st.markdown("""
+                    CNN (ResNet18)
+                    - Convolutional neural network
+                    - Efficient image classification
+
+                    Vision Transformer (ViT)
+                    - Transformer-based vision model
+                    - Captures global image features
+                    """)
+    st.divider()
+
+    st.subheader("📊 Model Performance")
+
+    st.caption("CNN (ResNet18)")
+    st.metric("Accuracy", "88.08%")
+
+    st.caption("Vision Transformer (ViT)")
+    st.metric("Accuracy", "85.24%")
+
+    if st.session_state.classification_results:
+        st.divider()
+        st.subheader("🔬 Session")
+        st.caption(f"{len(st.session_state.classification_results)} "
+                    "model result(s) available for AI Assistant.")

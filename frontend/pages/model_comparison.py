@@ -198,3 +198,46 @@ if uploaded_files:
                 st.error(f"Comparison Failed for "
                             f"{uploaded_file.name}: {e}")
             st.divider()
+
+# Sidebar
+with st.sidebar:
+    st.subheader("📊 Model Comparison")
+
+    st.caption("Compare AgroWeedGuard models using the same "
+                "input image.")
+    st.divider()
+
+    st.subheader("🔍 Detection Models")
+    st.markdown("""
+                    YOLOv8
+                    - Object detection
+                    - Fast inference
+
+                    Faster R-CNN
+                    - Object detection
+                    - Region-based approach
+                    """)
+    st.divider()
+
+    st.subheader("🌿 Classification Models")
+    st.markdown("""
+                    CNN (ResNet18)
+                    - Image classification
+
+                    Vision Transformer (ViT)
+                    - Transformer-based classification
+                    """)
+    st.divider()
+
+    st.subheader("📈 Accuracy")
+    st.caption("YOLOv8")
+    st.metric("Accuracy", "XX.XX%")
+
+    st.caption("Faster R-CNN")
+    st.metric("Accuracy", "XX.XX%")
+
+    st.caption("CNN (ResNet18)")
+    st.metric("Accuracy", "XX.XX%")
+
+    st.caption("Vision Transformer (ViT)")
+    st.metric("Accuracy", "XX.XX%")
