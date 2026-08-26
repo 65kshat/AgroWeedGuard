@@ -142,7 +142,6 @@ with st.sidebar:
     st.metric("Accuracy", "85.24%")
 
     if st.session_state.classification_results:
-        st.divider()
         st.subheader("🔬 Session")
         st.caption(f"{len(st.session_state.classification_results)} "
                     "model result(s) available for AI Assistant.")

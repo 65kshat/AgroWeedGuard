@@ -231,13 +231,13 @@ with st.sidebar:
 
     st.subheader("📈 Accuracy")
     st.caption("YOLOv8")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy mAP50", "95.17%")
 
     st.caption("Faster R-CNN")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy mAP50", "79.53%")
 
     st.caption("CNN (ResNet18)")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy", "88.08%")
 
     st.caption("Vision Transformer (ViT)")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy", "85.24%")

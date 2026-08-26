@@ -160,18 +160,6 @@ with st.sidebar:
                 "are available.")
     st.divider()
 
-    st.subheader("📊 At a Glance")
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.metric("AI Models", "4")
-        st.metric("Weed Classes", "12")
-
-    with col2:
-        st.metric("Detection", "2")
-        st.metric("Classification", "2")
-    st.divider()
-
     st.subheader("🎯 Analysis Pipeline")
     st.markdown("""
                 1. Input  

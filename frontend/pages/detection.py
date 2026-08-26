@@ -165,16 +165,14 @@ with st.sidebar:
 
     st.subheader("📊 Model Performance")
     st.caption("YOLOv8")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy mAP50", "95.17%")
 
     st.caption("Faster R-CNN")
-    st.metric("Accuracy", "XX.XX%")
+    st.metric("Accuracy mAP50", "79.53%")
 
     st.divider()
     
     if st.session_state.detection_results:
-        st.divider()
-
         st.subheader("🔬 Session")
 
         st.caption(f"{len(st.session_state.detection_results)} "
