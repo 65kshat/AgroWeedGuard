@@ -256,7 +256,7 @@ The evaluation.ipynb notebook is used to collect and verify the final evaluation
 
 🚀 Installation
 1. Clone the repository
-    git clone <YOUR_REPOSITORY_URL>
+    git clone <https://github.com/65kshat/AgroWeedGuard>
     cd AgroWeedGuard
 
 2. Install dependencies
@@ -271,6 +271,7 @@ Never commit API keys, passwords, or other secrets to GitHub.
 4. Run the application
 From the project root:
 
+```text
 streamlit run frontend/app.py
 🌱 Current Capabilities
 ✅ YOLOv8 weed detection
@@ -289,6 +290,7 @@ streamlit run frontend/app.py
 ✅ Model evaluation notebook
 ✅ Custom Streamlit interface
 ✅ Model metrics displayed in the application
+```
 
 ⚠️ Limitations
 Model predictions depend on image quality and environmental conditions.
@@ -301,6 +303,7 @@ Real-world deployment would require additional validation across different field
 🔮 Future Enhancements
 Potential future improvements include:
 
+```text
 📄 Automated PDF report generation
 📷 Real-time camera detection
 📱 Mobile application support
@@ -310,10 +313,12 @@ Potential future improvements include:
 🌍 Geographic weed distribution visualization
 🔄 Continuous model improvement using additional field data
 🎓 Project Context
+```
 
 AgroWeedGuard was developed as an AI/ML internship capstone project demonstrating an end-to-end agricultural computer vision system.
 The project combines:
 
+```text
 Machine Learning
 Deep Learning
 Computer Vision
@@ -321,6 +326,7 @@ Model Evaluation
 Streamlit Deployment
 LLM Integration
 AI-assisted Analysis
+```
 
 into a single operational application.
 
