@@ -28,7 +28,7 @@ AgroWeedGuard allows users to:
 
 | Model | Purpose | mAP@50 |
 |---|---|---:|
-| YOLOv8 | Weed detection and localization | **[Add Value]** |
+| YOLOv8 | Weed detection and localization | **95.17%** |
 | Faster R-CNN | Weed detection and localization | **79.53%** |
 
 ### Faster R-CNN Evaluation
@@ -44,8 +44,8 @@ AgroWeedGuard allows users to:
 
 | Model | Purpose | Accuracy |
 |---|---|---:|
-| CNN (ResNet18) | Weed species classification | **[Add Value]** |
-| Vision Transformer (ViT) | Weed species classification | **[Add Value]** |
+| CNN (ResNet18) | Weed species classification | **88.08%** |
+| Vision Transformer (ViT) | Weed species classification | **85.24%** |
 
 The current application supports **12 weed classes**.
 
@@ -99,6 +99,7 @@ The AI Assistant uses an external LLM API to analyze the collected model results
                             ▼
                   Interpreted Results
 
+```
 🖥️ Application Features
 
 🔍 Weed Detection
