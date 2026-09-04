@@ -257,19 +257,18 @@ The evaluation.ipynb notebook is used to collect and verify the final evaluation
 🚀 Installation
 1. Clone the repository
     git clone <https://github.com/65kshat/AgroWeedGuard>
-    cd AgroWeedGuard
+     --> cd AgroWeedGuard
 
 2. Install dependencies
     pip install -r requirements.txt
 
-3. Configure environment variables
-
-Create a .env file in the project root.
+3. Configure environment variables: 
+Create a .env file in the project root,
 NVIDIA_API_KEY=your_api_key_here
 Never commit API keys, passwords, or other secrets to GitHub.
 
 4. Run the application
-From the project root:
+from the project root:
 
 ```text
 streamlit run frontend/app.py
