@@ -177,6 +177,7 @@ Scikit-learn
 Matplotlib
 LLM API
 
+```text
 AgroWeedGuard/
 │
 ├── datasets/
@@ -215,6 +216,7 @@ AgroWeedGuard/
 ├── .env
 ├── .gitignore
 └── README.md
+```
 
 ⚙️ System Workflow
 Upload one or more agricultural field images.
